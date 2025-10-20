@@ -4,9 +4,10 @@ const setUser = (user) => {
   if (!user) throw new Error("Login Error!");
 
   try {
-    const {_id, email, role} = user;
+    const {_id, fullName, email, role} = user;
     const payload = {
       _id,
+      fullName,
       email,
       role,
     };
@@ -17,16 +18,14 @@ const setUser = (user) => {
   }
 };
 
-const getUser = (token) => {
+const validateUser = (token) => {
   if (!token) return null;
   try {
     return jwt.verify(token, process.env.SECRET_JWT);
   } catch (err) {
     console.log("Error occurred while verifying the jwt token:", err);
-    return res.render("signin", {
-        error: "User not authorized!"
-    });
+    return null;
   }
 };
 
-module.exports = {getUser, setUser};
+module.exports = {validateUser, setUser};
