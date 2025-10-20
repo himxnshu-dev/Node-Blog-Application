@@ -26,6 +26,7 @@ app.use("/user", userRouter);
 
 app.get("/", authenticateUserToken, (req, res) => {
   return res.render("home", {
+    user: req.user,
     name: req.user.fullName
   });
 });

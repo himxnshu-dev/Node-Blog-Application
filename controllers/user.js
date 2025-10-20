@@ -12,6 +12,12 @@ const handleGetUserSignin = (req, res) => {
 
 const handleUserSignup = async (req, res) => {
   const {name, email, password} = req.body;
+
+  const user = await User.findOne({email})
+  if (user) return res.render("signin", {
+    error: "This email is already registered!"
+  })
+
   await User.create({
     fullName: name,
     email,
@@ -48,9 +54,16 @@ const handleUserSignin = async (req, res) => {
   }
 };
 
+const handleUserLogout = (req, res) => {
+    res.clearCookie("token")
+
+    return res.redirect("/user/signin")
+}
+
 module.exports = {
   handleGetUserSignin,
   handleGetUserSignup,
   handleUserSignup,
   handleUserSignin,
+  handleUserLogout
 };
