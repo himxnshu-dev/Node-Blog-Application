@@ -9,6 +9,6 @@ const {
 
 router.route("/signup").get(handleGetUserSignup).post(handleUserSignup);
 
-router.route("/login").get(handleGetUserSignin).post(handleUserSignin);
+router.route("/signin").get(handleGetUserSignin).post(handleUserSignin);
 
 module.exports = router;
