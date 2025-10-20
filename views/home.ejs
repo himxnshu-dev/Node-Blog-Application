@@ -9,8 +9,8 @@
 <body>
     <%- include('./partials/nav') %>
 
-    <% if (locals.name) { %>
-     Welcome, <%= locals.name %>!
+    <% if (locals.user) { %>
+     Welcome, <%= locals.user.fullName %>!
     <% } %>
 
     <%- include('./partials/script') %>

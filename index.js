@@ -3,9 +3,10 @@ const app = express();
 require("dotenv").config();
 const path = require("path");
 const userRouter = require("./routes/user");
+const blogRoute = require("./routes/blog");
 const {connectMongoDB} = require("./models/connection");
-const {authenticateUserToken} = require('./middlewares/auth');
-const cookieParser = require('cookie-parser')
+const {authenticateUserToken} = require("./middlewares/auth");
+const cookieParser = require("cookie-parser");
 
 // MongoDB connection
 connectMongoDB(process.env.MONGO_URI)
@@ -23,11 +24,11 @@ app.set("views", path.resolve("./views"));
 
 // Router setup
 app.use("/user", userRouter);
+app.use("/blog", blogRoute);
 
 app.get("/", authenticateUserToken, (req, res) => {
   return res.render("home", {
     user: req.user,
-    name: req.user.fullName
   });
 });
 
