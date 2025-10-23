@@ -3,12 +3,7 @@ const User = require("../models/user");
 
 const validateUser = (token) => {
   if (!token) return null;
-  try {
-    return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-  } catch (err) {
-    console.log("Error occurred while verifying the jwt token:", err.message);
-    return null;
-  }
+  return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 };
 
 const generateAccessAndRefreshTokens = async (userId) => {
@@ -19,15 +14,15 @@ const generateAccessAndRefreshTokens = async (userId) => {
     console.log("User object:", user);
     if (!user) return null;
 
-    const {_id, email, password, role} = user;
+    const {_id, email, fullName, role} = user;
     const payload = {
       _id,
       email,
-      password,
+      fullName,
       role,
     };
     const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-      expiresIn: "5m",
+      expiresIn: "10s",
     });
     const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET);
 
