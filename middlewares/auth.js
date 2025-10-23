@@ -1,13 +1,15 @@
 const {validateUser} = require("../services/auth");
 
 const authenticateUserToken = (req, res, next) => {
-  const token = req.cookies.accessToken;
+  const token =
+    req.cookies.accessToken ||
+    req.header("Authorization")?.replace("Bearer ", "");
   if (!token) return res.redirect("/user/signin");
 
   const user = validateUser(token);
-  console.log("User object from the auth middleware:", user)
+  //   console.log("User object from the auth middleware:", user)
   if (!user) return res.redirect("/user/signin");
-  
+
   req.user = user;
   return next();
 };

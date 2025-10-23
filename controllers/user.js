@@ -1,6 +1,6 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
-const {setUser, generateAccessAndRefreshTokens} = require("../services/auth");
+const {generateAccessAndRefreshTokens} = require("../services/auth");
 
 const handleGetUserSignup = (req, res) => {
   return res.render("signup");
@@ -52,9 +52,9 @@ const handleUserSignin = async (req, res) => {
     );
 
     const options = {
-        httpOnly: true,
-        secure: true
-    }
+      httpOnly: true,
+      secure: true,
+    };
 
     return res
       .status(200)
@@ -62,17 +62,48 @@ const handleUserSignin = async (req, res) => {
       .cookie("refreshToken", refreshToken, options)
       .redirect("/");
   } catch (err) {
-    console.log("Error occurred:", err);
+    console.log("Error occurred:", err.message);
     return res.status(500).render("signin", {
       error: "An internal error occurred, please try again!",
     });
   }
 };
 
-const handleUserLogout = (req, res) => {
-  res.clearCookie("accessToken");
+const handleUserLogout = async (req, res) => {
+  try {
+    console.log("User logging out:", req.user);
+    const userId = req.user._id;
+    await User.findByIdAndUpdate(
+      userId,
+      {
+        $unset: {
+          refreshToken: 1,
+        },
+      },
+      {
+        new: true,
+      }
+    );
 
-  return res.redirect("/");
+    console.log("Successfully removed refresh token from DB.");
+
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    return res
+      .clearCookie("refreshToken", options)
+      .clearCookie("accessToken", options)
+      .redirect("/");
+  } catch (err) {
+    console.log("Error while logging out:", err);
+
+    return res
+      .clearCookie("refreshToken", options)
+      .clearCookie("accessToken", options)
+      .redirect("/");
+  }
 };
 
 module.exports = {
