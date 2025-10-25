@@ -5,7 +5,7 @@ const path = require("path");
 const userRouter = require("./routes/user");
 const blogRoute = require("./routes/blog");
 const {connectMongoDB} = require("./models/connection");
-const {authenticateUserToken} = require("./middlewares/auth");
+const {authenticateUserToken} = require("./middlewares/auth.middleware");
 const cookieParser = require("cookie-parser");
 
 // MongoDB connection

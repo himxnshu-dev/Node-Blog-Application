@@ -7,7 +7,7 @@ const {
   handleUserSignup,
   handleUserLogout,
 } = require("../controllers/user");
-const {authenticateUserToken} = require("../middlewares/auth");
+const {authenticateUserToken} = require("../middlewares/auth.middleware");
 
 router.route("/signup").get(handleGetUserSignup).post(handleUserSignup);
 
