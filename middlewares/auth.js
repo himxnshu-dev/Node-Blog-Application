@@ -1,5 +1,6 @@
 const User = require("../models/user");
 const {validateUser} = require("../services/auth");
+const jwt = require("jsonwebtoken");
 
 const authenticateUserToken = async (req, res, next) => {
   try {
@@ -8,7 +9,7 @@ const authenticateUserToken = async (req, res, next) => {
       req.header("Authorization")?.replace("Bearer ", "");
     if (!token) return res.redirect("/user/signin");
 
-    const user = validateUser(token);
+    const user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     //   console.log("User object from the auth middleware:", user)
     if (!user) return res.redirect("/user/signin");
 
@@ -16,7 +17,7 @@ const authenticateUserToken = async (req, res, next) => {
     next();
   } catch (err) {
     if (err.name === "TokenExpiredError") {
-      console.log("Token expired:", err.name);
+      console.log("Token expired with error:", err.name);
 
       const options = {
         httpOnly: true,
@@ -24,28 +25,50 @@ const authenticateUserToken = async (req, res, next) => {
       };
 
       try {
-        const refreshToken = req.cookies.refreshToken;
-        const user = await User.findOne({refreshToken});
-        if (user) {
-          await User.findOneAndUpdate(user._id, {
-            $unset: {
-              refreshToken: 1,
-            },
-          });
-          console.log("User refresh token successfully removed from the DB!");
-        }
+        const incomingRefreshToken =
+          req.cookies?.refreshToken ||
+          req.header("Authorization").replace("Bearer ", "");
+        if (!incomingRefreshToken)
+          return res.status(401).redirect("/user/signin");
+        const decodedUser = jwt.verify(
+          incomingRefreshToken,
+          process.env.REFRESH_TOKEN_SECRET
+        );
+
+        const user = await User.findById(decodedUser._id);
+        if (!user) return res.status(401).redirect("/user/signin");
+
+        if (incomingRefreshToken !== user.refreshToken)
+          return res
+            .status(403)
+            .clearCookie("accessToken", options)
+            .clearCookie("refreshToken", options)
+            .redirect("/user/signin");
+
+        const {_id, fullName, email, role} = user;
+        const payload = {
+          _id,
+          fullName,
+          email,
+          role,
+        };
+
+        const newAccessToken = jwt.sign(
+          payload,
+          process.env.ACCESS_TOKEN_SECRET,
+          {expiresIn: "10s"}
+        );
+        console.log("New access token generated:", newAccessToken);
+        req.user = payload;
+
+        res.cookie("accessToken", newAccessToken, options);
+        next();
       } catch (error) {
         console.log(
-          "Error during removal of refresh token from the DB:",
-          error.name,
-          error.message
+          "Error occurred while generating the new access token:",
+          err
         );
       }
-
-      return res
-        .clearCookie("refreshToken", options)
-        .clearCookie("accessToken", options)
-        .redirect("/user/signin");
     } else {
       console.log(
         "Error occurred while authenticating the user:",

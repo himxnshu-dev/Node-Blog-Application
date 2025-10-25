@@ -1,17 +1,12 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
-const validateUser = (token) => {
-  if (!token) return null;
-  return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-};
-
 const generateAccessAndRefreshTokens = async (userId) => {
   if (!userId) return null;
 
   try {
     const user = await User.findById(userId);
-    console.log("User object:", user);
+    // console.log("User object:", user);
     if (!user) return null;
 
     const {_id, email, fullName, role} = user;
@@ -38,4 +33,4 @@ const generateAccessAndRefreshTokens = async (userId) => {
   }
 };
 
-module.exports = {validateUser, generateAccessAndRefreshTokens};
+module.exports = {generateAccessAndRefreshTokens};
