@@ -1,8 +1,11 @@
-const {Router} = require('express')
+const {Router} = require("express");
 const router = Router();
-const {handleGetBlogPage} = require("../controllers/blog")
-const {authenticateUserToken} = require("../middlewares/auth")
+const {handleGetBlogPage, handlePostBlogs} = require("../controllers/blog");
+const {authenticateUserToken} = require("../middlewares/auth.middleware");
+const upload = require("../middlewares/multer.middleware");
 
-router.get('/add-new',authenticateUserToken, handleGetBlogPage)
+router.get("/add-new", authenticateUserToken, handleGetBlogPage);
 
-module.exports = router
+router.post("/", upload.single("image"), handlePostBlogs);
+
+module.exports = router;

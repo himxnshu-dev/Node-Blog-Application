@@ -6,4 +6,10 @@ const handleGetBlogPage = (req, res) => {
     })
 }
 
-module.exports = { handleGetBlogPage }
+const handlePostBlogs = (req, res) => {
+    // console.log(req.body)
+
+    return res.redirect("/")
+}
+
+module.exports = { handleGetBlogPage, handlePostBlogs }
