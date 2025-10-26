@@ -54,9 +54,21 @@ const handlePostCommentOnBlog = async (req, res) => {
     return res.status(200).redirect(`/blog/${req.params.blogId}`)
 };
 
+const handleGetLoggedInUserBlogs = async (req, res) => {
+    const userId = req.params.userId
+    const blogs = await Blog.find({createdBy: userId}).populate("createdBy")
+    // console.log("User blogs:", blogs)
+
+    return res.render("myBlogs", {
+        blogs,
+        user: req.user
+    })
+}
+
 module.exports = {
   handleGetBlogPage,
   handlePostBlogs,
   handleGetUserBlogInfo,
   handlePostCommentOnBlog,
+  handleGetLoggedInUserBlogs
 };
