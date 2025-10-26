@@ -17,7 +17,7 @@ const authenticateUserToken = async (req, res, next) => {
     next();
   } catch (err) {
     if (err.name === "TokenExpiredError") {
-      console.log("Token expired with error:", err.name);
+    //   console.log("Token expired with error:", err.name);
 
       const options = {
         httpOnly: true,
@@ -42,7 +42,7 @@ const authenticateUserToken = async (req, res, next) => {
             .status(403)
             .clearCookie("accessToken", options)
             .clearCookie("refreshToken", options)
-            .redirect("/user.signin");
+            .redirect("/user/signin");
 
         const payload = {
           _id: user._id,
@@ -58,6 +58,7 @@ const authenticateUserToken = async (req, res, next) => {
             expiresIn: "10s",
           }
         );
+        console.log("New access token generated:", newAccessToken);
 
         res.cookie("accessToken", newAccessToken, options);
         req.user = payload;

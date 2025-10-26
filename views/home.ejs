@@ -1,18 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <%- include('./partials/head') %>
-</head>
-<body>
+  </head>
+  <body>
     <%- include('./partials/nav') %>
 
-    <% if (locals.user) { %>
-     Welcome, <%= locals.user.fullName %>!
-    <% } %>
+    <p class="lead m-3">
+      <% if (locals.user) { %> Welcome, <%= locals.user.fullName %>! <% } %>
+    </p>
+
+    <div class="container m-2">
+      <% blogs.forEach(blog => { %>
+      <div class="card" style="width: 18rem">
+        <img src="<%= blog.coverImageURL %>" class="card-img-top" />
+        <div class="card-body">
+          <h5 class="card-title"><%= blog.title %></h5>
+          <a href="/blog/<%= blog._id %>" class="btn btn-primary">View Blog</a>
+        </div>
+      </div>
+      <% }) %>
+    </div>
 
     <%- include('./partials/script') %>
-</body>
+  </body>
 </html>

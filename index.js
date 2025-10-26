@@ -7,6 +7,7 @@ const blogRoute = require("./routes/blog");
 const {connectMongoDB} = require("./models/connection");
 const {authenticateUserToken} = require("./middlewares/auth.middleware");
 const cookieParser = require("cookie-parser");
+const Blog = require("./models/blog");
 
 // MongoDB connection
 connectMongoDB(process.env.MONGO_URI)
@@ -17,6 +18,7 @@ connectMongoDB(process.env.MONGO_URI)
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
+app.use(express.static("./public"));
 
 // EJS setup
 app.set("view engine", "ejs");
@@ -24,11 +26,14 @@ app.set("views", path.resolve("./views"));
 
 // Router setup
 app.use("/user", userRouter);
-app.use("/blog", blogRoute);
+app.use("/blog", authenticateUserToken, blogRoute);
 
-app.get("/", authenticateUserToken, (req, res) => {
+app.get("/", authenticateUserToken, async (req, res) => {
+  const allBlogs = await Blog.find({});
+
   return res.render("home", {
     user: req.user,
+    blogs: allBlogs,
   });
 });
 
