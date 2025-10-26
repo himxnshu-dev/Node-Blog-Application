@@ -9,34 +9,25 @@
   <body>
     <%- include('./partials/nav') %>
 
-    <div class="container mt-4">
-      <form action="/user/signin" method="post">
-
-        <div class="mb-3">
-          <label for="userEmail" class="form-label">Email address</label>
-          <input
-            type="email"
-            name="email"
-            class="form-control"
-            id="userEmail"
-            aria-describedby="email"
-          />
-          <div id="emailHelp" class="form-text">
-            We'll never share your email with anyone else.
+    <div class="container app-container">
+      <div class="card soft form-card">
+        <h3 class="mb-3">Sign in</h3>
+        <form action="/user/signin" method="post">
+          <div class="mb-3">
+            <label for="userEmail" class="form-label">Email address</label>
+            <input type="email" name="email" class="form-control" id="userEmail" aria-describedby="email" placeholder="you@company.com" />
+            <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
           </div>
-        </div>
 
-        <div class="mb-3">
-          <label for="userPassword" class="form-label">Password</label>
-          <input
-            type="password"
-            name="password"
-            class="form-control"
-            id="userPassword"
-          />
-        </div>
-        <button type="submit" class="btn btn-primary">Login</button>
-      </form>
+          <div class="mb-3">
+            <label for="userPassword" class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" id="userPassword" placeholder="Your password" />
+          </div>
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-accent">Login</button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <%- include('./partials/script') %>

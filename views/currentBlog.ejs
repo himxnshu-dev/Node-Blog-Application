@@ -9,40 +9,60 @@
   <body>
     <%- include('./partials/nav') %>
 
-    <div class="container mt-4"></div>
-    <h2><%= blog.title %></h2>
-    <img src="<%= blog.coverImageURL %>" width="550px" class="m-3" />
-    <pre><%= blog.content %></pre>
-    <img src="<%= blog.createdBy.userProfileURL %>" class="m-1" width="100px" />
-    <%= blog.createdBy.fullName %>
-
-    <% if (locals.user) { %>
-     <div class="container mt-3">
-      <form action="/blog/comment/<%= blog._id %>" method="post">
-        <div class="mb-3">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Leave a comment here"
-            id="comment" name="content"
-          ></input>
-          <button type="submit" class="btn btn-primary">Comment</button>
+    <div class="container app-container">
+      <div class="card soft p-4">
+        <div class="d-flex align-items-center mb-3">
+          <div class="me-3">
+            <% if (blog.createdBy && blog.createdBy.userProfileURL) { %>
+              <img src="<%= blog.createdBy.userProfileURL %>" class="avatar-sm" alt="author" />
+            <% } %>
+          </div>
+          <div>
+            <h2 class="mb-0"><%= blog.title %></h2>
+            <div class="text-muted" style="font-size:0.9rem">by <%= blog.createdBy ? blog.createdBy.fullName : 'Unknown' %></div>
+          </div>
         </div>
-      </form>
-    </div>
-    <% } %>
 
-
-    <div class="container mt-4">
-        <% if (locals.comments) { %>
-         <h4>Comments (<%= comments.length %>)</h4>
-         <% comments.forEach(comment => { %>
-            <p><img src="<%= comment.createdBy.userProfileURL %>" width="50px">
-                <%= comment.createdBy.fullName %>
-            </p>
-            <%= comment.comment %>
-         <% }) %>
+        <% if (blog.coverImageURL) { %>
+          <img src="<%= blog.coverImageURL %>" class="img-fluid rounded mb-3" style="max-height:420px;object-fit:cover" />
         <% } %>
+
+        <div class="blog-content">
+          <pre class="mb-0"><%= blog.content %></pre>
+        </div>
+      </div>
+
+      <% if (locals.user) { %>
+        <div class="card soft p-3 mt-3">
+          <form action="/blog/comment/<%= blog._id %>" method="post">
+            <div class="mb-2">
+              <input type="text" class="form-control" placeholder="Leave a comment here" id="comment" name="content" />
+            </div>
+            <div class="d-flex justify-content-end">
+              <button type="submit" class="btn btn-accent">Comment</button>
+            </div>
+          </form>
+        </div>
+      <% } %>
+
+      <div class="mt-4">
+        <% if (locals.comments && comments.length > 0) { %>
+          <h4 class="mb-3">Comments (<%= comments.length %>)</h4>
+          <% comments.forEach(comment => { %>
+            <div class="comment-box d-flex mb-2">
+              <% if (comment.createdBy && comment.createdBy.userProfileURL) { %>
+                <img src="<%= comment.createdBy.userProfileURL %>" class="avatar-sm me-3" />
+              <% } %>
+              <div>
+                <div class="fw-bold"><%= comment.createdBy ? comment.createdBy.fullName : 'Anonymous' %></div>
+                <div class="text-muted" style="font-size:0.95rem"><%= comment.comment %></div>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div class="text-muted">No comments yet — be the first to comment.</div>
+        <% } %>
+      </div>
     </div>
 
     <%- include('./partials/script') %>
