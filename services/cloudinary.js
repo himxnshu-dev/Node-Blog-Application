@@ -1,5 +1,4 @@
-import {v2 as cloudinary} from "cloudinary";
-const fs = require("fs");
+const { v2: cloudinary } = require("cloudinary");
 
 // Configuration
 cloudinary.config({
@@ -15,13 +14,11 @@ const uploadOnCloudinary = async (localFilePath) => {
       resource_type: "auto",
     });
 
-    console.log(
-      "File has been uploaded successfully and the response:",
-      response
-    );
+    console.log("File has been uploaded successfully and the response:", response);
+
     return response;
   } catch (error) {
-    fs.unlinkSync(localFilePath);
+    console.error("Cloudinary upload failed:", error);
     return null;
   }
 };

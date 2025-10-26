@@ -1,15 +1,12 @@
 const multer = require("multer");
-const path = require("path");
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.resolve(__dirname, "../public/uploads/"));
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
+const storage = multer.diskStorage({});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 500000,
   },
 });
-
-const upload = multer({storage: storage});
 
 module.exports = upload;
