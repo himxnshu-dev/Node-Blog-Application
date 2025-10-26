@@ -1,6 +1,78 @@
 const User = require("../models/user");
-const {validateUser} = require("../services/auth");
 const jwt = require("jsonwebtoken");
+
+const checkForUser = async (req, res, next) => {
+  try {
+    const token =
+      req.cookies?.accessToken ||
+      req.header("Authorization")?.replace("Bearer ", "");
+
+    if (!token) return next();
+
+    const user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+    req.user = user;
+    next();
+  } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      const options = {
+        httpOnly: true,
+        secure: true,
+      };
+
+      try {
+        const incomingRefToken =
+          req.cookies?.refreshToken ||
+          req.header("Authorization")?.replace("Bearer ", "");
+        if (!incomingRefToken) {
+          res.clearCookie("accessToken", options);
+          return next();
+        }
+
+        const decodedUser = jwt.verify(
+          incomingRefToken,
+          process.env.REFRESH_TOKEN_SECRET
+        );
+
+        const user = await User.findById(decodedUser._id);
+
+        if (!user || incomingRefToken !== user.refreshToken) {
+          res
+            .clearCookie("accessToken", options)
+            .clearCookie("refreshToken", options);
+          return next();
+        }
+
+        const payload = {
+          _id: user._id,
+          fullName: user.fullName,
+          email: user.email,
+          role: user.role,
+        };
+
+        const newAccessToken = jwt.sign(
+          payload,
+          process.env.ACCESS_TOKEN_SECRET,
+          {expiresIn: "10s"}
+        );
+        console.log("New access token:", newAccessToken);
+
+        res.cookie("accessToken", newAccessToken, options);
+
+        req.user = payload;
+        next();
+      } catch (err) {
+        console.log("Error while generating a new access token:", err);
+        res
+          .clearCookie("accessToken", options)
+          .clearCookie("refreshToken", options);
+        return next();
+      }
+    } else {
+      return next();
+    }
+  }
+};
 
 const authenticateUserToken = async (req, res, next) => {
   try {
@@ -17,7 +89,7 @@ const authenticateUserToken = async (req, res, next) => {
     next();
   } catch (err) {
     if (err.name === "TokenExpiredError") {
-    //   console.log("Token expired with error:", err.name);
+      //   console.log("Token expired with error:", err.name);
 
       const options = {
         httpOnly: true,
@@ -82,4 +154,4 @@ const authenticateUserToken = async (req, res, next) => {
   }
 };
 
-module.exports = {authenticateUserToken};
+module.exports = {authenticateUserToken, checkForUser};

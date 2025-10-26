@@ -7,13 +7,14 @@ const {
   handlePostCommentOnBlog,
 } = require("../controllers/blog");
 const upload = require("../middlewares/multer.middleware");
+const {authenticateUserToken, checkForUser} = require("../middlewares/auth.middleware")
 
-router.get("/add-new", handleGetBlogPage);
+router.get("/add-new", authenticateUserToken, handleGetBlogPage);
 
-router.post("/", upload.single("image"), handlePostBlogs);
+router.post("/", authenticateUserToken, upload.single("image"), handlePostBlogs);
 
-router.get("/:blogId", handleGetUserBlogInfo);
+router.get("/:blogId", checkForUser, handleGetUserBlogInfo);
 
-router.post("/comment/:blogId", handlePostCommentOnBlog);
+router.post("/comment/:blogId", authenticateUserToken, handlePostCommentOnBlog);
 
 module.exports = router;

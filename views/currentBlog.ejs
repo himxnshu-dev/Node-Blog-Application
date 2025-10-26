@@ -14,9 +14,10 @@
     <img src="<%= blog.coverImageURL %>" width="550px" class="m-3" />
     <pre><%= blog.content %></pre>
     <img src="<%= blog.createdBy.userProfileURL %>" class="m-1" width="100px" />
-    <%= blog.createdBy.fullName %>!
+    <%= blog.createdBy.fullName %>
 
-    <div class="container mt-3">
+    <% if (locals.user) { %>
+     <div class="container mt-3">
       <form action="/blog/comment/<%= blog._id %>" method="post">
         <div class="mb-3">
           <input
@@ -25,10 +26,12 @@
             placeholder="Leave a comment here"
             id="comment" name="content"
           ></input>
-          <button type="submit" class="btn btn-primary">submit</button>
+          <button type="submit" class="btn btn-primary">Comment</button>
         </div>
       </form>
     </div>
+    <% } %>
+
 
     <div class="container mt-4">
         <% if (locals.comments) { %>

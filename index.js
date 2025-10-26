@@ -5,7 +5,7 @@ const path = require("path");
 const userRouter = require("./routes/user");
 const blogRoute = require("./routes/blog");
 const {connectMongoDB} = require("./models/connection");
-const {authenticateUserToken} = require("./middlewares/auth.middleware");
+const {checkForUser} = require("./middlewares/auth.middleware");
 const cookieParser = require("cookie-parser");
 const Blog = require("./models/blog");
 
@@ -26,9 +26,9 @@ app.set("views", path.resolve("./views"));
 
 // Router setup
 app.use("/user", userRouter);
-app.use("/blog", authenticateUserToken, blogRoute);
+app.use("/blog", blogRoute);
 
-app.get("/", authenticateUserToken, async (req, res) => {
+app.get("/", checkForUser, async (req, res) => {
   const allBlogs = await Blog.find({});
 
   return res.render("home", {
