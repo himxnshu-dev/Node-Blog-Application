@@ -46,6 +46,20 @@ const handleGetUserBlogInfo = async (req, res) => {
   });
 };
 
+const handleDeleteBlog = async (req, res) => {
+    try {
+        const blogId = req.params.blogId;
+        const blog = await Blog.findByIdAndDelete(blogId).populate("createdBy");
+        console.log("The blog to be deleted:", blog)
+        await Comment.deleteMany({blogId: blog._id});
+        
+        return res.redirect(`/blog/my-blogs/${req.user._id}`)
+    } catch (error) {
+        console.log("Error occurred:", error)
+        return res.redirect(`/blog/my-blogs/${req.user._id}`)
+    }
+}
+
 const handlePostCommentOnBlog = async (req, res) => {
   const {content} = req.body;
 
@@ -75,4 +89,5 @@ module.exports = {
   handleGetUserBlogInfo,
   handlePostCommentOnBlog,
   handleGetLoggedInUserBlogs,
+  handleDeleteBlog
 };

@@ -18,7 +18,11 @@
               <img src="<%= blog.coverImageURL %>" class="card-img-top" />
               <div class="card-body">
                 <h5 class="card-title"><%= blog.title %></h5>
-                <a href="/blog/<%= blog._id %>" class="btn btn-accent mt-2">View Blog</a>
+                <a href="/blog/<%= blog._id %>" class="btn btn-accent mt-2">View</a>
+                <a href="/blog/<%= blog._id %>" class="btn btn-accent mt-2">Edit</a>
+                <form action="/blog/delete-blog/<%= blog._id %>" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger mt-2">Delete</button> 
+                </form>
               </div>
             </div>
           <% }) %>
