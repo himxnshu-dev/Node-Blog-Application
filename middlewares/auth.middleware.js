@@ -53,7 +53,7 @@ const checkForUser = async (req, res, next) => {
         const newAccessToken = jwt.sign(
           payload,
           process.env.ACCESS_TOKEN_SECRET,
-          {expiresIn: "10s"}
+          {expiresIn: "10m"}
         );
         console.log("New access token:", newAccessToken);
 
